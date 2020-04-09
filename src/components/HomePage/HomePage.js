@@ -5,6 +5,11 @@ import Container from '@material-ui/core/Container';
 import { Grid, Button, Paper } from '@material-ui/core';
 
 const styles = {
+    page:{
+        background: 'lightgray',
+        height: '100vh'
+    },
+    
     paper: {
         height: '400px',
         width: '500px',
@@ -16,11 +21,6 @@ const styles = {
     homeBtn: {
         height: 200,
         width: 300
-    },
-
-    page:{
-        background: 'lightgray',
-        height: '100vh'
     },
 
     link: {
