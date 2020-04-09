@@ -6,6 +6,7 @@ import DateFnsUtils from '@date-io/date-fns';
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 import Schedule from '../Schedule/Schedule';
 
+
 const styles = {
     page:{
         background: '#cce9f1',
@@ -17,8 +18,7 @@ const styles = {
     },
 
     datepicker: {
-        marginTop: 50,
-        
+        marginTop: 50, 
     },
 
     img:{

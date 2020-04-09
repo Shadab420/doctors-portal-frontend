@@ -30,6 +30,10 @@ const styles = {
     errorMsg: {
         background: 'red',
         color: 'white'
+    },
+
+    doctorSelect:{
+        width: '100%'
     }
 
 }
@@ -78,7 +82,7 @@ const Schedule = (props) => {
 
        const appointment = {
            ...data,
-           scheduleId: schedule._id,
+           schedule: {...schedule},
            appointmentDate: getFormatedDate(selectedDate),
            patientToken: patToken
         }
@@ -135,14 +139,14 @@ const Schedule = (props) => {
                 </DialogContentText>
 
                 <FormControl variant="outlined">
-                    <InputLabel htmlFor="outlined-age-native-simple">Age</InputLabel>
+                    <InputLabel htmlFor="outlined-age-native-simple">Select a Doctor</InputLabel>
                     <Select
                     native
+                    style={styles.doctorSelect}
                     value={doctorId}
                     onChange={handleDoctorChange}
                     label="Select a doctor"
                     autofocus
-                    fullwidth
                     inputRef={register({ required: true })} 
                     error={errors.doctor? true : false}
                     inputProps={{

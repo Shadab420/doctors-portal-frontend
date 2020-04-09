@@ -10,7 +10,8 @@ import './App.css';
 import HomePage from './components/HomePage/HomePage';
 import Appointment from './components/Appointment/Appointment';
 import Dashboard from './components/Dashboard/Dashboard';
-
+import Sidebar from './components/Sidebar/Sidebar';
+import DoctorAppointments from './components/DoctorAppointments/DoctorAppointments';
 
 function App() {
   return (
@@ -23,9 +24,15 @@ function App() {
             <Route path="/patient/appointment">
               <Appointment />
             </Route>
-            <Route path="/doctor/dashboard">
-              <Dashboard />
-            </Route>
+            
+            <Sidebar>
+              <Route path="/doctor/dashboard">
+                <Dashboard />
+              </Route>
+              <Route path="/doctor/appointments">
+                <DoctorAppointments />
+              </Route>
+            </Sidebar>
             {/* 
             <Route path="/review">
             <Review></Review>
