@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Paper, Typography, Button, Dialog, DialogTitle, DialogContent, DialogContentText, TextField, DialogActions } from '@material-ui/core';
+import { Paper, Typography, Button, Dialog, DialogTitle, DialogContent, DialogContentText, TextField, DialogActions, FormControl, Select, InputLabel } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import DateFnsUtils from '@date-io/date-fns';
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
@@ -20,22 +20,38 @@ const styles = {
         color: 'white',
         padding: 10,
         marginTop: 20
+    },
+
+    successMsg: {
+        background: 'green',
+        color: 'white'
+    },
+
+    errorMsg: {
+        background: 'red',
+        color: 'white'
     }
+
 }
 
 const Schedule = (props) => {
-    let { schedule } = props
+    let { schedule, doctors } = props
     let [selectedDate, setSelectedDate] = React.useState(schedule.appointmentDate);
+    let [doctorId, setDoctorId] = React.useState('');
+    let [patientToken, setPatientToken] = React.useState(0);
+    let [applySuccessful, setApplySuccessful] = React.useState(false);
+    let [applyFailed, setApplyFailed] = React.useState(false);
     const [open, setOpen] = React.useState(false);
-    const { register, handleSubmit, watch, errors, setValue  } = useForm();
+    const { register, handleSubmit, watch, errors, reset  } = useForm();
  
     const handleClickOpen = () => {
         setOpen(true);
-        console.log(schedule.appointmentDate);
       };
     
       const handleClose = () => {
         setOpen(false);
+        setApplySuccessful(false);
+        setApplyFailed(false);
       };
 
     const handleDateChange = (date) => {
@@ -51,7 +67,43 @@ const Schedule = (props) => {
         return `${(datee < 10 ? '0' : '') + datee}/${(date.getMonth()+1 < 10 ? '0' : '') + month }/${year}`;
     }
 
-    const onSubmit = data => { console.log({...data, appointmentDate: getFormatedDate(selectedDate)}) }
+    function randomToken(min, max) {
+        return min + Math.floor((max - min) * Math.random());
+    }
+
+    const onSubmit = (data, e) => {
+        
+        const patToken = randomToken(1,100);
+        setPatientToken(patToken);
+
+       const appointment = {
+           ...data,
+           scheduleId: schedule._id,
+           appointmentDate: getFormatedDate(selectedDate),
+           patientToken: patToken
+        }
+        
+
+        fetch('http://localhost:5000/addAppointment', {
+            method: 'POST',
+            headers: {
+                "content-type": "application/json"
+            },
+            body: JSON.stringify(appointment)
+        })
+            .then(res => res.json())
+            .then(data => {
+                setApplySuccessful(true);
+                e.target.reset(); //clear form
+            })
+            .catch(err => applyFailed(true))
+        
+    }
+
+    const handleDoctorChange = (event) => {
+        const doctor = event.target.name;
+        setDoctorId(event.target.value);
+    }
 
 
     return (
@@ -74,22 +126,39 @@ const Schedule = (props) => {
 
             <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
                 <DialogTitle id="form-dialog-title">{schedule.department}</DialogTitle>
+                { applySuccessful && <Typography variant="h6" style={styles.successMsg}>{`Application successful! Please Remember your token number is: ${patientToken}`}</Typography>}
+                { applyFailed && <Typography variant="h6" style={styles.errorMsg}>{`Application submission failed! Please try again later.`}</Typography>}
                 <form onSubmit={handleSubmit(onSubmit)}>
                 <DialogContent>
                 <DialogContentText>
                     Fill up the Appointment Form.
                 </DialogContentText>
 
-                
-                <Autocomplete
-                    id="doctor-combobox"
+                <FormControl variant="outlined">
+                    <InputLabel htmlFor="outlined-age-native-simple">Age</InputLabel>
+                    <Select
+                    native
+                    value={doctorId}
+                    onChange={handleDoctorChange}
+                    label="Select a doctor"
                     autofocus
-                    options={props.doctors}
-                    getOptionLabel={(option) => option.name}
-                    style={{ width: 300 }}
-                    renderInput={(params) => <TextField {...params} name="doctor" inputRef={register({ required: true })} error={errors.doctor? true : false} label="Select a doctor" variant="outlined" />}
-                />
-                {errors.doctor && <div>Please select a doctor</div>}
+                    fullwidth
+                    inputRef={register({ required: true })} 
+                    error={errors.doctor? true : false}
+                    inputProps={{
+                        name: 'doctorId',
+                        id: 'outlined-age-native-simple',
+                    }}
+                    >
+                    <option aria-label="None" value="" />
+                    {
+                        doctors.map(doctor => <option value={doctor._id}>{doctor.name}</option>)
+                    }
+                   
+                    </Select>
+                    {errors.doctorId && <div>Please select a doctor</div>}
+                </FormControl>
+                
 
                 <TextField
                     
@@ -150,7 +219,7 @@ const Schedule = (props) => {
                     Cancel
                 </Button>
                 <Button type="submit" variant="contained" color="primary" >
-                    Subscribe
+                    Get Appointment
                 </Button>
                 </DialogActions>
                 </form>
