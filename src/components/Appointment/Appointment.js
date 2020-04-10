@@ -60,7 +60,7 @@ const Appointment = () => {
     
     useEffect(() => {
         //get all schedules
-        fetch('http://localhost:5000/schedules')
+        fetch('https://doctors-portal-back.herokuapp.com/schedules')
             .then(res => res.json())
             .then(data => {
                 setSchedules(data);
@@ -69,7 +69,7 @@ const Appointment = () => {
             .catch(err => console.log(err));
 
         //get all doctors
-        fetch('http://localhost:5000/doctors')
+        fetch('https://doctors-portal-back.herokuapp.com/doctors')
             .then(res => res.json())
             .then(data => {
                 setDoctors(data);
@@ -102,7 +102,7 @@ const Appointment = () => {
         const month = date.getMonth()+1;
         const year = date.getFullYear();
 
-        return `${(datee < 10 ? '0' : '') + datee}/${(date.getMonth()+1 < 10 ? '0' : '') + month }/${year}`;
+        return `${(datee < 10 ? '0' : '') + datee}-${(date.getMonth()+1 < 10 ? '0' : '') + month }-${year}`;
     }
 
     const getFormattedDate2 = (date) => {
@@ -124,7 +124,7 @@ const Appointment = () => {
                                     margin="normal"
                                     id="date-picker-dialog"
                                     label="Select Appointment Date"
-                                    format="dd/MM/yyyy"
+                                    format="dd-MM-yyyy"
                                     value={selectedDate}
                                     onChange={handleDateChange}
                                     KeyboardButtonProps={{

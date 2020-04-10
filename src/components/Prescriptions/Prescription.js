@@ -9,6 +9,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import { withStyles, makeStyles } from '@material-ui/core/styles';
 import Prescription from '../Prescription/Prescription';
+import PrescriptionView from '../Prescription/PrescriptionView';
 
 
 const StyledTableCell = withStyles((theme) => ({
@@ -38,7 +39,7 @@ const useStyles = makeStyles({
 
 const styles = {
     page:{
-        background: 'rgb(205, 251, 240)',
+        background: '#f3d4d4',
         minHeight: '100vh'
     },
 
@@ -79,20 +80,19 @@ const styles = {
 }
 
 
-const Dashboard = () => {
+const Prescriptions = (props) => {
     const classes = useStyles();
-    const [loadingAppointments, setLoadingAppointments] = useState(true);
+    const [loadingPrescriptions, setLoadingPrescriptions] = useState(true);
     const [progress, setProgress] = React.useState(0);
-    const [appointments, setAppointments] = useState([]);
-    const [pendingAppointCnt, setPendingAppointCnt] = useState(0);
+    const [prescriptions, setPrescriptions] = useState([]);
 
     useEffect(() => {
-        fetch('https://doctors-portal-back.herokuapp.com/appointments')
+        fetch('https://doctors-portal-back.herokuapp.com/prescriptions')
             .then(res => res.json())
             .then(data => {
-                setAppointments(data);
-                setPendingAppointCnt(data.filter(ap => ap.pending == true).length);
-                setLoadingAppointments(false);
+                setPrescriptions(data);
+                console.log(data)
+                setLoadingPrescriptions(false);
             })
             .catch(err => console.log(err));
     }, [])
@@ -109,52 +109,14 @@ const Dashboard = () => {
         return () => {
           clearInterval(timer);
         };
-      }, [loadingAppointments]);
-
-
-    const handleApproval = (index) => {
-
-        
-        fetch(`https://doctors-portal-back.herokuapp.com/appointmentStatus/${appointments[index]._id}`, {
-            method: 'PUT',
-            body: JSON.stringify({
-                pending: false
-            }),
-            headers: {
-            "Content-type": "application/json; charset=UTF-8"
-            }
-            })
-            .then(response => response.json())
-            .then(data => {
-                const updatedAppointments =  appointments;
-                updatedAppointments[index] = data;
-                setAppointments(updatedAppointments);
-                setPendingAppointCnt(updatedAppointments.filter(ap => ap.pending == true).length);
-            })
-            .catch(err => console.log(err))
-    }
+      }, [loadingPrescriptions]);
 
     return (
         <div>
 
             <Container maxWidth="xl" style={styles.page}>
-                <Typography variant="h2">Dashboard</Typography>
+                <Typography variant="h2">Prescriptions</Typography>
                 <hr style={styles.hr} />
-
-                <Grid container spacing={3}>
-                    <Grid md={6} sm={12}>
-                        <div style={styles.countingDivs}>
-                            <span style={styles.countingDivs.span}>{pendingAppointCnt}</span>
-                            <Typography variant="h6">Pending Appointments</Typography>
-                        </div>
-                    </Grid>
-                    <Grid md={6} sm={12}>
-                        <div style={styles.countingDivs}>
-                            <span style={styles.countingDivs.span}>{appointments.length}</span>
-                            <Typography variant="h6">Total Appointments</Typography>
-                        </div>
-                    </Grid>
-                </Grid>
 
                 <Grid container spacing={3}>
                 <Grid md={12} xs={12}>
@@ -169,38 +131,26 @@ const Dashboard = () => {
                                     <StyledTableCell align="right">Phone</StyledTableCell>
                                     <StyledTableCell align="right">Department</StyledTableCell>
                                     <StyledTableCell align="right">Appointment Date</StyledTableCell>
-                                    <StyledTableCell align="right">Time</StyledTableCell>
-                                    <StyledTableCell align="right">Approval</StyledTableCell>
-                                    <StyledTableCell align="right">Prescription</StyledTableCell>
+                                    <StyledTableCell align="right">See Prescription</StyledTableCell>
                                 </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                { !loadingAppointments && appointments.map((appointment, index) => (
+                                { !loadingPrescriptions && prescriptions.map((prescription, index) => (
                                     <StyledTableRow key={index}>
                                     <StyledTableCell component="th" scope="row">
-                                        {appointment.patientToken}
+                                        {prescription.patientToken}
                                     </StyledTableCell>
-                                    <StyledTableCell align="right">{appointment.name}</StyledTableCell>
-                                    <StyledTableCell align="right">{appointment.phone}</StyledTableCell>
-                                    <StyledTableCell align="right">{appointment.schedule.department}</StyledTableCell>
-                                    <StyledTableCell align="right">{appointment.appointmentDate}</StyledTableCell>
-                                    <StyledTableCell align="right">{appointment.schedule.time}</StyledTableCell>
-                                    <StyledTableCell align="right"><Button variant="contained" color={ appointment.pending? 'primary' : 'secondary' } onClick={() => handleApproval(index)}>{ appointment.pending? 'Approve' : 'Approved' }</Button></StyledTableCell>
-                                    <StyledTableCell align="right">
-                                        {
-                                            !appointment.prescription && <Prescription appointment={appointments[index]}/>
-                                        }
-                                        {
-                                            appointment.prescription && <Button variant="contained" color= "secondary">Prescribed</Button>
-                                        }
-                                        
-                                    </StyledTableCell>
+                                    <StyledTableCell align="right">{prescription.name}</StyledTableCell>
+                                    <StyledTableCell align="right">{prescription.phone}</StyledTableCell>
+                                    <StyledTableCell align="right">{prescription.department}</StyledTableCell>
+                                    <StyledTableCell align="right">{prescription.appdate}</StyledTableCell>
+                                    <StyledTableCell align="right"><PrescriptionView prescription={prescriptions[index]} /></StyledTableCell>
                                     </StyledTableRow>
                                 ))
                                 }
 
                                 { 
-                                    loadingAppointments && <Grid container justify="space-around">
+                                    loadingPrescriptions && <Grid container justify="space-around">
                                         <Typography variant="h5" style={styles.loading}>Loading <CircularProgress variant="determinate" value={progress} color="secondary" style={styles.loadingCircle} /></Typography>
                                     </Grid> 
                                 }  
@@ -216,4 +166,4 @@ const Dashboard = () => {
     );
 };
 
-export default Dashboard;
+export default Prescriptions;

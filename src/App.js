@@ -12,6 +12,7 @@ import Appointment from './components/Appointment/Appointment';
 import Dashboard from './components/Dashboard/Dashboard';
 import Sidebar from './components/Sidebar/Sidebar';
 import DoctorAppointments from './components/DoctorAppointments/DoctorAppointments';
+import Prescriptions from './components/Prescriptions/Prescription';
 
 function App() {
   return (
@@ -31,6 +32,9 @@ function App() {
               </Route>
               <Route path="/doctor/appointments">
                 <DoctorAppointments />
+              </Route>
+              <Route path="/doctor/prescriptions">
+                <Prescriptions />
               </Route>
             </Sidebar>
             {/* 

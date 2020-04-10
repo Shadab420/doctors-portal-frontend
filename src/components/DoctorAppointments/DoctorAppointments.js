@@ -52,7 +52,7 @@ const StyledTableCell = withStyles((theme) => ({
 
 const styles = {
     page:{
-        background: 'rgb(205, 251, 240)',
+        background: '#a5a5f9',
         minHeight: '100vh'
     },
 
@@ -101,7 +101,7 @@ const DoctorAppointments = () => {
     const [appointments, setAppointments] = useState([]);
     // useEffect(() => {
     //     //get all schedules
-    //     fetch('http://localhost:5000/appointments')
+    //     fetch('https://doctors-portal-back.herokuapp.com/appointments')
     //         .then(res => res.json())
     //         .then(data => {
     //             setSchedules(data);
@@ -116,8 +116,8 @@ const DoctorAppointments = () => {
         console.log(getFormatedDate(date));
 
         setLoadingAppointments(true);
-        
-        fetch('http://localhost:5000/appointments')
+
+        fetch(`https://doctors-portal-back.herokuapp.com/appointments/${getFormatedDate(date)}`)
             .then(res => res.json())
             .then(data => {
                 setAppointments(data);
@@ -128,7 +128,7 @@ const DoctorAppointments = () => {
     };
 
     useEffect(() => {
-        fetch('http://localhost:5000/appointments')
+        fetch(`https://doctors-portal-back.herokuapp.com/appointments/${getFormatedDate(selectedDate)}`)
             .then(res => res.json())
             .then(data => {
                 setAppointments(data);
@@ -158,7 +158,7 @@ const DoctorAppointments = () => {
         const month = date.getMonth()+1;
         const year = date.getFullYear();
 
-        return `${(datee < 10 ? '0' : '') + datee}/${(date.getMonth()+1 < 10 ? '0' : '') + month }/${year}`;
+        return `${(datee < 10 ? '0' : '') + datee}-${(date.getMonth()+1 < 10 ? '0' : '') + month }-${year}`;
     }
 
     return (
@@ -176,7 +176,7 @@ const DoctorAppointments = () => {
                                     margin="normal"
                                     id="date-picker-dialog"
                                     label="Select Appointment Date"
-                                    format="dd/MM/yyyy"
+                                    format="dd-MM-yyyy"
                                     value={selectedDate}
                                     onChange={handleDateChange}
                                     KeyboardButtonProps={{

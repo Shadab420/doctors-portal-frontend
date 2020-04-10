@@ -68,7 +68,7 @@ const Schedule = (props) => {
         const month = date.getMonth()+1;
         const year = date.getFullYear();
 
-        return `${(datee < 10 ? '0' : '') + datee}/${(date.getMonth()+1 < 10 ? '0' : '') + month }/${year}`;
+        return `${(datee < 10 ? '0' : '') + datee}-${(date.getMonth()+1 < 10 ? '0' : '') + month }-${year}`;
     }
 
     function randomToken(min, max) {
@@ -84,11 +84,13 @@ const Schedule = (props) => {
            ...data,
            schedule: {...schedule},
            appointmentDate: getFormatedDate(selectedDate),
-           patientToken: patToken
+           patientToken: patToken,
+           pending: true,
+           prescription: false
         }
         
 
-        fetch('http://localhost:5000/addAppointment', {
+        fetch('https://doctors-portal-back.herokuapp.com/addAppointment', {
             method: 'POST',
             headers: {
                 "content-type": "application/json"
@@ -207,7 +209,7 @@ const Schedule = (props) => {
                                     id="date-picker-dialog"
                                     name="datePicker"
                                     label="Select Appointment Date"
-                                    format="dd/MM/yyyy"
+                                    format="dd-MM-yyyy"
                                     value={selectedDate}
                                     onChange={handleDateChange}
                                     KeyboardButtonProps={{
